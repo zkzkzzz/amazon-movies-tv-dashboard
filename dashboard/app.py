@@ -10,7 +10,6 @@ import plotly.express as px
 import streamlit as st
 
 
-TEAM_NAME = "kai"
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 MODEL_DIR = BASE_DIR / "models"
@@ -138,6 +137,43 @@ def apply_theme() -> None:
         [data-testid="stSidebar"] * {
             color: #f8fafc;
         }
+        [data-testid="stSidebar"] h1 {
+            font-size: 1.45rem;
+            letter-spacing: 0;
+            margin-bottom: 0.25rem;
+        }
+        .sidebar-caption {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            line-height: 1.35;
+            margin-bottom: 1.2rem;
+        }
+        .sidebar-label {
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin: 0.2rem 0 0.45rem;
+            text-transform: uppercase;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] {
+            gap: 0.45rem;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] label {
+            align-items: center;
+            background: #172033;
+            border: 1px solid #24324a;
+            border-radius: 8px;
+            display: flex;
+            min-height: 2.75rem;
+            padding: 0.55rem 0.75rem;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
+            background: #1d4ed8;
+            border-color: #60a5fa;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
+            display: none;
+        }
         [data-testid="stMetric"] {
             background: #ffffff;
             border: 1px solid #dde4ee;
@@ -167,6 +203,16 @@ def apply_theme() -> None:
             font-size: 0.98rem;
             margin-top: -0.35rem;
             margin-bottom: 1.25rem;
+        }
+        .chart-note {
+            background: #f8fafc;
+            border-left: 3px solid #0f766e;
+            border-radius: 8px;
+            color: #475569;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            margin: 0.5rem 0 1rem;
+            padding: 0.65rem 0.8rem;
         }
         </style>
         """,
@@ -200,7 +246,7 @@ def overview_page() -> None:
     page_header(
         "Overview",
         "Amazon Movies & TV Reviews",
-        f"Team {TEAM_NAME} | Amazon Reviews 2018 | Movies_and_TV 5-core",
+        "Amazon Reviews 2018 | Movies_and_TV 5-core",
     )
 
     cols = st.columns(5)
@@ -229,6 +275,10 @@ def overview_page() -> None:
         style_figure(rating_fig, 330),
         use_container_width=True,
     )
+    left.markdown(
+        '<div class="chart-note">Ratings are strongly positive: 5-star reviews make up 59.4% of the dataset, while 1-star and 2-star reviews are about 10.7% combined.</div>',
+        unsafe_allow_html=True,
+    )
     yearly_stable = yearly[yearly["n_reviews"] >= 100].copy()
     year_fig = px.line(
         yearly_stable,
@@ -242,6 +292,10 @@ def overview_page() -> None:
         style_figure(year_fig, 330),
         use_container_width=True,
     )
+    right.markdown(
+        '<div class="chart-note">Average rating stays near 4.0 in the early years, then rises after 2011 and remains above 4.2 in the later review period.</div>',
+        unsafe_allow_html=True,
+    )
     st.caption("Average-rating trend omits years with fewer than 100 reviews so a one-review year does not dominate the line.")
 
     volume_fig = px.area(
@@ -251,8 +305,6 @@ def overview_page() -> None:
         labels={"review_ym": "Month", "n_reviews": "Reviews"},
         color_discrete_sequence=[CHART_BLUE],
     )
-    st.plotly_chart(style_figure(volume_fig, 340), use_container_width=True)
-
     verified_display = verified.copy()
     verified_display["verified_label"] = verified_display["verified"].map({True: "Verified purchase", False: "Unverified"})
     verified_fig = px.bar(
@@ -263,7 +315,18 @@ def overview_page() -> None:
         labels={"verified_label": "", "avg_rating": "Avg rating"},
         color_discrete_sequence=[CHART_AMBER, CHART_TEAL],
     )
-    st.plotly_chart(style_figure(verified_fig, 300), use_container_width=True)
+    verified_fig.update_layout(bargap=0.45, showlegend=False)
+    volume_col, verified_col = st.columns([2, 1])
+    volume_col.plotly_chart(style_figure(volume_fig, 340), use_container_width=True)
+    volume_col.markdown(
+        '<div class="chart-note">Review volume grows slowly until 2012, spikes around 2014-2016, and then falls near the end of the observed period.</div>',
+        unsafe_allow_html=True,
+    )
+    verified_col.plotly_chart(style_figure(verified_fig, 340), use_container_width=True)
+    verified_col.markdown(
+        '<div class="chart-note">Verified purchases have a higher average rating than unverified reviews, suggesting stronger satisfaction among confirmed buyers.</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def product_page() -> None:
@@ -278,12 +341,11 @@ def product_page() -> None:
 
     brand_options = ["All"] + sorted(products["brand"].dropna().unique().tolist())[:200]
     category_options = ["All"] + sorted(products["primary_category"].dropna().unique().tolist())
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     brand = col1.selectbox("Brand", brand_options)
     category = col2.selectbox("Category", category_options)
-    min_reviews = col3.number_input("Min reviews", min_value=0, value=50, step=25)
 
-    filtered = products[products["n_reviews"] >= min_reviews].copy()
+    filtered = products.copy()
     if brand != "All":
         filtered = filtered[filtered["brand"] == brand]
     if category != "All":
@@ -409,7 +471,10 @@ def main() -> None:
     st.set_page_config(page_title="Amazon Movies & TV Dashboard", layout="wide")
     apply_theme()
     st.sidebar.title("Amazon Reviews")
-    st.sidebar.caption(f"Team {TEAM_NAME}")
+    st.sidebar.markdown(
+        '<div class="sidebar-caption">Movies & TV review analytics</div>',
+        unsafe_allow_html=True,
+    )
 
     missing = missing_files()
     if missing:
@@ -417,7 +482,8 @@ def main() -> None:
         st.write(missing)
         return
 
-    page = st.sidebar.radio("Page", PAGES)
+    st.sidebar.markdown('<div class="sidebar-label">Modules</div>', unsafe_allow_html=True)
+    page = st.sidebar.radio("Modules", PAGES, label_visibility="collapsed")
     if page == "Overview":
         overview_page()
     elif page == "Product Explorer":
