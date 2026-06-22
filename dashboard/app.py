@@ -63,6 +63,15 @@ def fmt_int(value) -> str:
     return f"{int(float(value)):,}"
 
 
+def fmt_compact_int(value) -> str:
+    number = float(value)
+    if abs(number) >= 1_000_000:
+        return f"{number / 1_000_000:.1f}M"
+    if abs(number) >= 1_000:
+        return f"{number / 1_000:.1f}K"
+    return fmt_int(number)
+
+
 def fmt_float(value, digits: int = 3) -> str:
     return f"{float(value):.{digits}f}"
 
@@ -250,9 +259,9 @@ def overview_page() -> None:
     )
 
     cols = st.columns(5)
-    cols[0].metric("Reviews", fmt_int(metrics.get("total_reviews", 0)))
-    cols[1].metric("Users", fmt_int(metrics.get("total_users", 0)))
-    cols[2].metric("Items", fmt_int(metrics.get("total_reviewed_items", 0)))
+    cols[0].metric("Reviews", fmt_compact_int(metrics.get("total_reviews", 0)))
+    cols[1].metric("Users", fmt_compact_int(metrics.get("total_users", 0)))
+    cols[2].metric("Items", fmt_compact_int(metrics.get("total_reviewed_items", 0)))
     cols[3].metric("Avg rating", fmt_float(metrics.get("avg_rating", 0), 2))
     cols[4].metric("Metadata match", f"{float(metrics.get('metadata_matched_review_ratio', 0)):.1%}")
 
