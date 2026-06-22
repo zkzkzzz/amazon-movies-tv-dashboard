@@ -64,6 +64,12 @@ def fmt_float(value, digits: int = 3) -> str:
     return f"{float(value):.{digits}f}"
 
 
+def prepare_recommendation_display(recommendations: pd.DataFrame) -> pd.DataFrame:
+    display = recommendations.copy()
+    display["display_rating"] = display["predicted_rating"].clip(lower=1, upper=5).round(2)
+    return display
+
+
 def overview_page() -> None:
     metrics = metric_map()
     st.title("Amazon Movies & TV Reviews")
@@ -144,7 +150,9 @@ def recommender_page() -> None:
         return
 
     st.subheader("ALS Top-10 Recommendations")
-    st.dataframe(selected[["rank", "asin", "title", "predicted_rating"]], use_container_width=True, hide_index=True)
+    display = prepare_recommendation_display(selected)
+    st.caption("ALS raw scores are used for ranking; displayed scores are clamped to the original 1-5 rating scale.")
+    st.dataframe(display[["rank", "asin", "title", "display_rating"]], use_container_width=True, hide_index=True)
     st.subheader("Popularity/High-Rating Fallback")
     st.dataframe(fallback[["asin", "title", "n_reviews", "avg_rating"]], use_container_width=True, hide_index=True)
 
