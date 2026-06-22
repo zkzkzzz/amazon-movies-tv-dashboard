@@ -1,0 +1,13 @@
+metric,value
+total_reviews,3297702
+total_products,181839
+total_users,297529
+total_reviewed_items,60175
+avg_rating,4.2206
+metadata_matched_review_ratio,0.999032
+als_random_rmse,1.769578
+als_time_rmse,1.859654
+als_time_cold_start_dropped_ratio,0.738551
+sentiment_auc,0.910194
+sentiment_f1,0.917379
+sentiment_modeling_rows,120487

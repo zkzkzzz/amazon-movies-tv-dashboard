@@ -1,0 +1,14 @@
+metric,value
+auc,0.910194
+f1,0.917379
+accuracy,0.924563
+weighted_precision,0.918476
+weighted_recall,0.924563
+confusion_label_1_pred_1,20568.0
+confusion_label_1_pred_0,387.0
+confusion_label_0_pred_1,1413.0
+confusion_label_0_pred_0,1493.0
+n_train,96626.0
+n_test,23861.0
+label_0_rows,14380.0
+label_1_rows,106107.0
