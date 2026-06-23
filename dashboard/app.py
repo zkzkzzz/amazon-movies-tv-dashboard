@@ -161,27 +161,69 @@ def apply_theme() -> None:
             color: #94a3b8;
             font-size: 0.78rem;
             font-weight: 700;
-            margin: 0.2rem 0 0.45rem;
+            margin: 0.2rem 0 0.55rem;
             text-transform: uppercase;
         }
+        [data-testid="stSidebar"] div.stRadio {
+            width: 100%;
+        }
         [data-testid="stSidebar"] div[role="radiogroup"] {
-            gap: 0.45rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            width: 100%;
         }
         [data-testid="stSidebar"] div[role="radiogroup"] label {
             align-items: center;
-            background: #172033;
-            border: 1px solid #24324a;
+            background: linear-gradient(180deg, #172843 0%, #132238 100%);
+            border: 1px solid rgba(96, 165, 250, 0.16);
             border-radius: 8px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            box-sizing: border-box;
             display: flex;
-            min-height: 2.75rem;
-            padding: 0.55rem 0.75rem;
+            height: 3.2rem;
+            justify-content: flex-start;
+            min-height: 3.2rem;
+            padding: 0 1rem;
+            position: relative;
+            transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+            width: 100%;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] label::before {
+            background: transparent;
+            border-radius: 999px;
+            bottom: 0.7rem;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0.7rem;
+            width: 3px;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+            background: #1b2d4a;
+            border-color: rgba(96, 165, 250, 0.42);
         }
         [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
-            background: #1d4ed8;
+            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
             border-color: #60a5fa;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked)::before {
+            background: #eff6ff;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:focus-visible) {
+            outline: 2px solid #93c5fd;
+            outline-offset: 2px;
         }
         [data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
             display: none;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] label p {
+            font-size: 0.96rem;
+            font-weight: 600;
+            line-height: 1;
+            margin: 0;
+            white-space: nowrap;
         }
         [data-testid="stMetric"] {
             background: #ffffff;
